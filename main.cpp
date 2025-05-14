@@ -17,7 +17,7 @@ int main()
 
     Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
     // m4 shape (2,2) - m3 shape (2,1)
-    Matrix<Tensor> m5 = m4 / m3; 
+    Matrix<Tensor> m5 = m4 * m3; 
     // m4.print();
     // m3.print();
     m5.print();

@@ -1,4 +1,5 @@
 #include "Tensor.h"
+#include <unordered_set>
 
 Tensor::Tensor()
     : impl(std::make_shared<Impl>(0.0f)) {}
@@ -17,19 +18,30 @@ float Tensor::grad() const {
 }
 
 void Tensor::backward() {
-    impl->grad = 1.0f; // Seed for gradient d/dx(x) = 1.0
-    std::vector<std::shared_ptr<Impl>> stack = {impl};
+    impl->grad = 1.0f;
 
-    // doing dfs
-    while (!stack.empty()) {
-        auto node = stack.back(); // getting the node
-        stack.pop_back();
-        if (node->backward_fn) node->backward_fn(); // flowing the gradients backwards
+    std::vector<std::shared_ptr<Impl>> topo_order;
+    std::unordered_set<Impl*> visited;
+
+    std::function<void(std::shared_ptr<Impl>)> dfs;
+    dfs = [&](std::shared_ptr<Impl> node) {
+        if (!node || visited.count(node.get())) return;
+        visited.insert(node.get());
         for (auto& prev : node->prev) {
-            stack.push_back(prev); // getting the children which is furthur back
+            dfs(prev);
         }
+        topo_order.push_back(node);
+    };
+
+    dfs(impl);
+
+    // reverse topological order to propagate gradients
+    std::reverse(topo_order.begin(), topo_order.end());
+    for (auto& node : topo_order) {
+        if (node->backward_fn) node->backward_fn();
     }
 }
+
 
 // Use pass-by-value to support lvalues and rvalues equally
 // Tensor operator+(Tensor lhs, Tensor rhs) {
