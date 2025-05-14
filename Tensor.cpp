@@ -25,6 +25,7 @@ void Tensor::backward() {
 
     std::function<void(std::shared_ptr<Impl>)> dfs;
     dfs = [&](std::shared_ptr<Impl> node) {
+        // visited.count() checks whether the the raw pointer is already in the set
         if (!node || visited.count(node.get())) return;
         visited.insert(node.get()); // used to get the raw pointer
         for (auto& prev : node->prev) {
