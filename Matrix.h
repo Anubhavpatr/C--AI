@@ -167,7 +167,7 @@ public:
             {
                 for (int j = 0; j < out_cols; ++j)
                 {
-                    new_data[i * out_cols + j] = A.data[i * out_cols + j] + B.data[i * out_cols +j];
+                    new_data[i * out_cols + j] = A[{i, j}] + B[{i,j}];
                 }
             }
 
@@ -203,7 +203,7 @@ public:
             {
                 for (int j = 0; j < out_cols; ++j)
                 {
-                    new_data[i * out_cols + j] = A.data[i * out_cols + j] - B.data[i * out_cols+j];
+                    new_data[i * out_cols + j] = A[{i,j}] - B[{i,j}];
                 }
             }
 
@@ -217,8 +217,6 @@ public:
 
         return {out_rows,out_cols,new_data};
     }
-
-    
 
     Matrix<T> view(std::tuple<int, int> size) {
         int total = std::get<0>(size) * std::get<1>(size);
