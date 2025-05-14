@@ -193,6 +193,80 @@ public:
         return {out_rows,out_cols,new_data};
     }
 
+    template<typename _T>
+    std::enable_if<
+        std::is_same_v<std::decay_t<_T>,Matrix<T>>,
+        Matrix<T>
+    >::type
+    operator*(_T&& a)
+    {
+        //ownership will be shared so it will not call the destructor
+        // which atleast someone owns it
+        int out_rows = std::max(rows, a.rows);
+        int out_cols = std::max(columns, a.columns);
+
+        // Matrix<T> result{out_rows, out_cols,T{}};
+        std::shared_ptr<T[]> new_data(new T[out_rows * out_cols]);
+        try
+        {            
+            Matrix<T> A = this->broadcast_to(out_rows, out_cols);
+            Matrix<T> B = a.broadcast_to(out_rows, out_cols);
+            for (int i = 0; i < out_rows; ++i)
+            {
+                for (int j = 0; j < out_cols; ++j)
+                {
+                    new_data[i * out_cols + j] = A[{i,j}] * B[{i,j}];
+                }
+            }
+
+            Logger::info("Successfully calculated element wise operation of * using broadcasting");
+        }
+        catch(...)
+        {
+            Logger::error("Error while calculating element wise operation of * using broadcasting");
+            std::cerr << "Error while calculating element wise operation of * using broadcasting" << std::endl;
+        }
+
+        return {out_rows,out_cols,new_data};
+    }
+
+    template<typename _T>
+    std::enable_if<
+        std::is_same_v<std::decay_t<_T>,Matrix<T>>,
+        Matrix<T>
+    >::type
+    operator/(_T&& a)
+    {
+        //ownership will be shared so it will not call the destructor
+        // which atleast someone owns it
+        int out_rows = std::max(rows, a.rows);
+        int out_cols = std::max(columns, a.columns);
+
+        // Matrix<T> result{out_rows, out_cols,T{}};
+        std::shared_ptr<T[]> new_data(new T[out_rows * out_cols]);
+        try
+        {            
+            Matrix<T> A = this->broadcast_to(out_rows, out_cols);
+            Matrix<T> B = a.broadcast_to(out_rows, out_cols);
+            for (int i = 0; i < out_rows; ++i)
+            {
+                for (int j = 0; j < out_cols; ++j)
+                {
+                    new_data[i * out_cols + j] = A[{i,j}] / B[{i,j}];
+                }
+            }
+
+            Logger::info("Successfully calculated element wise operation of / using broadcasting");
+        }
+        catch(...)
+        {
+            Logger::error("Error while calculating element wise operation of / using broadcasting");
+            std::cerr << "Error while calculating element wise operation of / using broadcasting" << std::endl;
+        }
+
+        return {out_rows,out_cols,new_data};
+    }   
+
     Matrix<T> view(std::tuple<int, int> size) {
         int total = std::get<0>(size) * std::get<1>(size);
         if (total != rows * columns) {
