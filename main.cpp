@@ -12,20 +12,20 @@ int main()
     Matrix<Tensor> m{2,3,ptr1}; // first matrix
     auto ptr2 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
     Matrix<Tensor> m2{3,2,ptr2}; // second matrix
-    auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[3]{1,2});
+    auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});
     Matrix<Tensor> m3{2,1,ptr3};
 
     Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
-    // m4 shape (3,3) - m3 shape (3,1)
-    Matrix<Tensor> m5 = m4 + m3; 
+    // m4 shape (2,2) - m3 shape (2,1)
+    Matrix<Tensor> m5 = m4 - m3; 
     // m4.print();
     // m3.print();
-    // m5.print();
+    m5.print();
     // the broadcasting rules work
     m5[{1,1}].backward();
-    std::cout << m3[{0,0}].grad() << std::endl;
+    std::cout << m3[{1,0}].grad() << std::endl;
     // std::cout << m3[{1,1}] << std::endl;
-    // m3.print();
+    m4.print();
     // Matrix<Tensor> m3_T = m3.transpose();
     // m3_T.print();
     // m3_T[{1,1}].backward();

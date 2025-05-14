@@ -46,6 +46,16 @@ class Tensor {
 public:
     Tensor(float val);
     Tensor();  // Default constructor
+        // Shallow copy constructor
+    Tensor(const Tensor& other) : impl(other.impl) {}
+
+    // Shallow copy assignment
+    Tensor& operator=(const Tensor& other) {
+        if (this != &other) {
+            impl = other.impl;
+        }
+        return *this;
+    }
 
     float value() const;
     float grad() const;
