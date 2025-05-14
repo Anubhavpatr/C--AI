@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <cmath>
 #include <functional>
+#include <numbers>
 #include "Logger.h"
 
 // 3. Logical (for boolean arrays)
@@ -566,6 +567,29 @@ public:
         {
             Logger::error("Error while negating the error");
             std::cerr << "Error while negating the error" << std::endl;
+        }
+        return out;
+    }
+
+    Tensor sigmoid()
+    {
+        double data_ = 1.0f/(1.0f + std::pow(std::numbers::e,-(this->value())));
+        Tensor out{};
+        try
+        {
+            out.impl->val = data_;
+            out.impl->prev ={this->impl};
+            // if we pass the value of the out it might be updated by something else
+            // so tthe gradients might not be calculated properly
+            out.impl->backward_fn = [object = *this,data_,out_impl=out.impl](){
+                object.impl->grad += out_impl->grad * data_*(1-data_);
+            };
+            Logger::info("Succesfully sigmoiding a tensor");
+        }
+        catch(...)
+        {
+            Logger::error("Error while sigmoiding a tensor");
+            std::cerr << "Error while sigmoiding a tensor" << std::endl;
         }
         return out;
     }
