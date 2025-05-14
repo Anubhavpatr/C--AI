@@ -68,31 +68,6 @@ public:
         return {static_cast<int>(indices.size()), static_cast<int>(indices[0].size()), columns, data_new};
     }
 
-    // inline just returns the expression actual expression
-    // Matrix<T> broadcast_to(int target_rows, int target_cols){
-    //     if ((rows != target_rows && rows != 1) ||
-    //         (columns != target_cols && columns != 1)) {
-    //         throw std::runtime_error("Incompatible shapes for broadcasting");
-    //     }
-    //     std::shared_ptr<T[]> new_data(new T[target_rows * target_cols]);
-    //     // Matrix<T> result{target_rows,target_cols,T{}};
-    //     for(int i = 0;i < target_rows;i++)
-    //     {
-    //         for(int j = 0;j < target_cols;j++)
-    //         {
-    //             //std::get<0>(position) * columns + std::get<1>(position);
-    //             int i_ = (rows == 1) ? 0 : i;
-    //             int j_ = (columns == 1) ? 0 : j;
-    //             // since it is previously 0
-    //             const T& val = data[i_ * columns + j_];
-    //             new_data[i * target_cols + j] = val;  // Copy constructor will preserve graph
-
-    //             //new_data[i * target_cols + j] = data[i_ * columns + j_]; 
-    //         }
-    //     }
-    //     return {target_rows,target_cols,new_data};
-    // }
-
     Matrix<T> broadcast_to(int target_rows, int target_cols) {
         if ((rows != target_rows && rows != 1) ||
             (columns != target_cols && columns != 1)) {
