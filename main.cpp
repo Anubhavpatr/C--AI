@@ -15,14 +15,30 @@ int main()
     // auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});
     // Matrix<Tensor> m3{2,1,ptr3};
 
-    Matrix<Tensor> m6 = m2.sum(1, true); // result is OneOrTwoD
-    m6.print();
-    std::cout << m6.shape() << std::endl;
-    // the sum works and the gradients works
-    m6[{2,0}].backward();
-    std::cout << m2[{2,1}].grad() << std::endl;
-    std::cout << m6.shape(0) << std::endl;
+    // Matrix<Tensor> m6 = m2.sum(1, true); // result is OneOrTwoD
+    // m6.print();
+    // std::cout << m6.shape() << std::endl;
+    // // the sum works and the gradients works
+    // m6[{2,0}].backward();
+    // std::cout << m2[{2,1}].grad() << std::endl;
+    // std::cout << m6.shape(0) << std::endl;
 
+    // Matrix<Tensor> m7 = m2.pow(2);
+    // m7.print();
+    // m2.print();
+
+    // m7[{1,1}].backward();
+    // std::cout << m2[{1,1}].grad() << std::endl;
+
+    // Matrix<Tensor> m8 = m2.max(1,true);
+    // m8.print();
+    // m8[{2,0}].backward();
+    // std::cout << m2[{2,1}].grad() << std::endl;
+
+    // Matrix<Tensor> m9 = m2.min(1,true);
+    // m9.print();
+    // m9[{2,0}].backward();
+    // std::cout << m2[{2,0}].grad() << std::endl;
 
     //Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
     // m4 shape (2,2) - m3 shape (2,1)

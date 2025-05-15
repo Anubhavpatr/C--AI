@@ -5,6 +5,8 @@
 #include <iostream>
 #include <tuple>
 #include <stdexcept>
+#include <cmath>
+#include <limits>
 #include <string>
 #include <vector>
 #include <memory>
@@ -143,6 +145,201 @@ public:
         return result;
     }
 
+    Matrix<T> max(int dim=0,bool keepdim=false)
+    {
+        Matrix<T> result{};
+        try
+        {
+            if(dim == 0)
+            {
+                if(keepdim)
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            if((new_data[i] < data[j * columns+i]).value())
+                            {
+                                new_data[i] = data[j * columns+i];
+                            }
+                        }
+                    }
+                    result = Matrix<T>(1,columns,new_data);
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            if((new_data[i] < data[j * columns + i]).value())
+                            {
+                                new_data[i] = data[j * columns + i];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{columns,new_data};
+                }
+            }
+            else if(dim == 1 || dim == -1)
+            {
+                if(keepdim)
+                {
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            if((new_data[i] < this->data[i * columns + j]).value())
+                            {
+                                new_data[i] = this->data[i * columns + j];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{rows,1,new_data};
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            if((new_data[i] < this->data[i * columns + j]).value())
+                            {
+                                new_data[i] = this->data[i * columns + j];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{rows,new_data};
+                }
+            }
+            else
+            {
+                throw std::runtime_error("The dimension does not exist");
+            }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while doing the max accross a certain dimension");
+            std::cerr << "Error while doing the max accross a certain dimension" << std::endl;
+        }
+
+        return result;
+    }
+
+    Matrix<T> min(int dim=0,bool keepdim=false)
+    {
+        Matrix<T> result{};
+        try
+        {
+            if(dim == 0)
+            {
+                if(keepdim)
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{std::numeric_limits<float>::max()};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            if((new_data[i] > data[j * columns+i]).value())
+                            {
+                                new_data[i] = data[j * columns+i];
+                            }
+                        }
+                    }
+                    result = Matrix<T>(1,columns,new_data);
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{std::numeric_limits<float>::max()};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            if((new_data[i] > data[j * columns + i]).value())
+                            {
+                                new_data[i] = data[j * columns + i];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{columns,new_data};
+                }
+            }
+            else if(dim == 1 || dim == -1)
+            {
+                if(keepdim)
+                {
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{std::numeric_limits<float>::max()};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            if((new_data[i] > this->data[i * columns + j]).value())
+                            {
+                                new_data[i] = this->data[i * columns + j];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{rows,1,new_data};
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{std::numeric_limits<float>::max()};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            if((new_data[i] > this->data[i * columns + j]).value())
+                            {
+                                new_data[i] = this->data[i * columns + j];
+                            }
+                        }
+                    }
+
+                    result = Matrix<T>{rows,new_data};
+                }
+            }
+            else
+            {
+                throw std::runtime_error("The dimension does not exist");
+            }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while doing the min accross a certain dimension");
+            std::cerr << "Error while doing the min accross a certain dimension" << std::endl;
+        }
+
+        return result;
+    }
+
+
     Matrix<T> sum(int dim=0,bool keepdim=false)
     {
         Matrix<T> result{};
@@ -223,7 +420,7 @@ public:
         return result;
     }
 
-    
+    // i want both rvalue and lvalue to be passed
     template<typename _T>
     Matrix<T> matmul(_T&& a) {
         static_assert(std::is_same_v<std::decay_t<_T>, Matrix<T>>, "Invalid argument type");
@@ -441,6 +638,18 @@ public:
         }
         return {columns, rows, new_data};
     } 
+
+    Matrix<T> pow(int num)
+    {
+        std::shared_ptr<T[]> new_data(new T[rows * columns]);
+        for(int i = 0;i < rows * columns;i++)
+        {
+            new_data[i] = this->data[i].pow(num);
+        }
+        return {rows,columns,new_data};
+    }
+
+
 
     std::string shape() const {
         return "(" + std::to_string(rows) + ", " + std::to_string(columns) + ")";
