@@ -4,6 +4,7 @@
 #include <vector>
 #include <type_traits>
 #include <cmath>
+#include <exception>
 #include <functional>
 #include <numbers>
 #include "Logger.h"
@@ -98,6 +99,11 @@ public:
                 static_assert(always_false<T>, "Unsupported type for Tensor addition");
             }
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error in operator+ while adding two tensors OR adding a tensor wir=th a number");
@@ -139,6 +145,11 @@ public:
                 static_assert(always_false<T>, "Unsupported type for Tensor subtraction");
             }
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while subtracting a tensor or number from a tensor");
@@ -174,7 +185,13 @@ public:
             } else {
                 static_assert(always_false<T>, "Unsupported type for Tensor multiplication");
             }
-        } catch (...) {
+        } 
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch (...) {
             Logger::error("Error while multiplying a tensor");
             std::cerr << "Error while multiplying a tensor" << std::endl;
         }
@@ -218,6 +235,11 @@ public:
             {
                 static_assert(always_false<T>, "Unsupported type for Tensor division");
             }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -267,6 +289,11 @@ public:
             // };
             Logger::info("Successfully added a tensor with itself");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while adding a tensor with itself");
@@ -293,6 +320,11 @@ public:
                 *this = *this - rhs;
             }
             Logger::info("Succesfully substracted a tensor from a tensor");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -322,6 +354,11 @@ public:
             }
             Logger::info("Successfully with multiplying with a tensor with itself");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while multiplying a tensor with itself");
@@ -348,6 +385,11 @@ public:
                 *this = *this / other;
             }
             Logger::info("Successfully with multiplying with a tensor with itself");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -377,6 +419,11 @@ public:
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using == operator");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while a comparing a tensor with a tensor or a number using == operator");
@@ -404,6 +451,11 @@ public:
                 static_assert(always_false<T>, "Unsupported type for Tensor comparison operator !=");
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using != operator");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -434,6 +486,11 @@ public:
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using < operator");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while a comparing a tensor with a tensor or a number using < operator");
@@ -462,6 +519,11 @@ public:
                 static_assert(always_false<T>, "Unsupported type for Tensor comparison operator <=");
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using <= operator");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -492,6 +554,11 @@ public:
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using > operator");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while a comparing a tensor with a tensor or a number using > operator");
@@ -521,6 +588,11 @@ public:
             }
             Logger::info("Successfully compared a tensor with a tensor or a number using >= operator");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while a comparing a tensor with a tensor or a number using >= operator");
@@ -542,6 +614,11 @@ public:
             };
             Logger::info("Successfully powered a tensor");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while powering a tensor");
@@ -562,6 +639,11 @@ public:
             };
 
             Logger::info("Successfully negated the tensor");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -586,6 +668,11 @@ public:
             };
             Logger::info("Succesfully sigmoiding a tensor");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while sigmoiding a tensor");
@@ -607,6 +694,11 @@ public:
                 object.impl->grad += out_impl->val * out_impl->grad;
             };
             Logger::info("Successfully exponentiated a tensor");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -630,6 +722,11 @@ public:
             };
             Logger::info("Successfully log a tensor");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while logarithmic");
@@ -651,6 +748,11 @@ public:
                 object.impl->grad += (1 - (t*t)) * out_impl->grad;
             };
             Logger::info("Successfully done the tanh function");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -781,6 +883,11 @@ operator+(T1&& number,T2&& tensor)
 
         Logger::info("Added a tensor to a number");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while adding a tensor to a number");
@@ -809,6 +916,11 @@ operator-(T1&& number,T2&& tensor)
         };    
 
         Logger::info("subtracting a tensor to a number");
+    }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
     }
     catch(...)
     {
@@ -839,6 +951,11 @@ operator*(T1&& number,T2&& tensor)
 
         Logger::info("subtracting a tensor to a number");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while subtracting a tensor from a number");
@@ -868,6 +985,11 @@ operator/(T1&& number,T2&& tensor)
 
         Logger::info("subtracting a tensor to a number");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while subtracting a tensor from a number");
@@ -894,6 +1016,11 @@ operator==(T1&& number,T2&& tensor)
         out.impl->val = (number == tensor.value());
         Logger::info("Successfully compared a number with a tensor using the == operator");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while comparing a number with a tensor using the == operator");
@@ -915,6 +1042,11 @@ operator!=(T1&& number,T2&& tensor)
     {
         out.impl->val = (number != tensor.value());
         Logger::info("Successfully compared a number with a tensor using the != operator");
+    }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
     }
     catch(...)
     {
@@ -939,6 +1071,11 @@ operator>(T1&& number,T2&& tensor)
         out.impl->val = (number > tensor.value());
         Logger::info("Successfully compared a number with a tensor using the > operator");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while comparing a number with a tensor using the > operator");
@@ -962,6 +1099,11 @@ operator<(T1&& number,T2&& tensor)
         out.impl->val = (number < tensor.value());
         Logger::info("Successfully compared a number with a tensor using the > operator");
     }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
+    }
     catch(...)
     {
         Logger::error("Error while comparing a number with a tensor using the > operator");
@@ -983,6 +1125,11 @@ operator<=(T1&& number,T2&& tensor)
     {
         out.impl->val = (number <= tensor.value());
         Logger::info("Successfully compared a number with a tensor using the <= operator");
+    }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
     }
     catch(...)
     {
@@ -1006,6 +1153,11 @@ operator>=(T1&& number,T2&& tensor)
     {
         out.impl->val = (number >= tensor.value());
         Logger::info("Successfully compared a number with a tensor using the >= operator");
+    }
+    catch(const std::exception& e)
+    {
+        Logger::error(std::string(e.what()));
+        std::cerr << e.what() << std::endl;
     }
     catch(...)
     {

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <exception>
 #include "Tensor.h"
 #include "Logger.h"
 
@@ -18,7 +19,10 @@ template<typename T>
 class Matrix {
     int rows;
     int columns;
+    int size; // for vector
     std::shared_ptr<T[]> data;
+
+    Matrix() = default;
 
 public:
 
@@ -29,28 +33,49 @@ public:
         }
     }
 
-    Matrix(int rows,int columns) :  rows(rows), columns(columns), data(nullptr) {}
+    Matrix(int rows,int columns) :  rows(rows), columns(columns), data(nullptr),size(-1) {}
 
     Matrix(int rows, int columns, std::shared_ptr<T[]> data)
-        : rows(rows), columns(columns), data(data) {}
+        : rows(rows), columns(columns), data(data),size(-1) {}
+
+    Matrix(int size,std::shared_ptr<T[]> data)
+        : rows(-1),columns(-1),size(size),data(data) {}
 
     Matrix(const Matrix& matrix)
-        : rows(matrix.rows), columns(matrix.columns), data(matrix.data) {}
+        : rows(matrix.rows), columns(matrix.columns), data(matrix.data),size(-1) {}
 
     // could have used template<typename ...Args>
     // but if i pass a single argument could cause ambiguity
 
     T& operator[](std::tuple<int,int> position){
         int index = std::get<0>(position) * columns + std::get<1>(position);
+        try
+        {
+            if(index >= rows * columns)
+            {
+                throw std::runtime_error("Wrong index not accessible");
+            }
+            Logger::info("Succesfully accessed the element");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while accessing the element");
+            std::cerr << "Error while accessing the element" << std::endl;
+        }
         return data[index];
     }
 
-    std::vector<std::shared_ptr<T>> operator[](std::tuple<int> position) {
-        std::vector<std::shared_ptr<T>> row;
+    std::vector<T> operator[](std::tuple<int> position) {
+        std::vector<T> row;
         int offset = std::get<0>(position) * columns;
         for (int i = 0; i < columns; ++i) {
             // making a shared pointer for each and every tensor
-            row.push_back(std::make_shared<T>(data[offset + i]));
+            row.push_back(data[offset + i]);
         }
         return row;
     }
@@ -69,28 +94,129 @@ public:
     }
 
     Matrix<T> broadcast_to(int target_rows, int target_cols) {
-        if ((rows != target_rows && rows != 1) ||
+        try
+        {
+            if ((rows != target_rows && rows != 1) ||
             (columns != target_cols && columns != 1)) {
-            throw std::runtime_error("Incompatible shapes for broadcasting");
+                throw std::runtime_error("Incompatible shapes for broadcasting");
+            }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
 
         Matrix<T> result{target_rows, target_cols};
         result.data = std::shared_ptr<T[]>(new T[target_rows * target_cols]);
 
-        for (int i = 0; i < target_rows; ++i) {
-            for (int j = 0; j < target_cols; ++j) {
-                int i_ = (rows == 1) ? 0 : i;
-                int j_ = (columns == 1) ? 0 : j;
+        try
+        {
+            for (int i = 0; i < target_rows; ++i) {
+                for (int j = 0; j < target_cols; ++j) {
+                    int i_ = (rows == 1) ? 0 : i;
+                    int j_ = (columns == 1) ? 0 : j;
 
-                // Compute the index in the original and broadcasted matrix
-                int orig_idx = i_ * columns + j_;
-                int target_idx = i * target_cols + j;
+                    // Compute the index in the original and broadcasted matrix
+                    int orig_idx = i_ * columns + j_;
+                    int target_idx = i * target_cols + j;
 
-                // Key: preserve autodiff by copying references, not values
-                result.data[target_idx] = data[orig_idx]; // Shallow copy of T
+                    // Key: preserve autodiff by copying references, not values
+                    result.data[target_idx] = data[orig_idx]; // Shallow copy of T
+                }
             }
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while broadcasting");
+            std::cerr << "Error while broadcasting" << std::endl;
+        }
 
+        return result;
+    }
+
+    Matrix<T> sum(int dim=0,bool keepdim=false)
+    {
+        Matrix<T> result{};
+        try
+        {
+            if(dim == 0)
+            {
+                if (keepdim)
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            new_data[i] += data[j * columns+i];
+                        }
+                    }
+                    result = Matrix<T>(1,columns,new_data);
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[1 * columns]);
+                    for(int i = 0;i < columns;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < rows;j++)
+                        {
+                            new_data[i] += data[j * columns+i];
+                        }
+                    }
+                    result = Matrix<T>(columns , new_data);
+                }
+            }
+            else if(dim ==1 || dim == -1 )
+            {
+                if(keepdim)
+                {
+                    //std::cout << "I am here" << std::endl;
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            new_data[i] += data[i * columns + j];
+                        }
+                    }
+                    result = Matrix<T>(rows, 1, new_data);
+                }
+                else
+                {
+                    std::shared_ptr<T[]> new_data(new T[rows * 1]);
+                    for(int i = 0;i < rows;i++)
+                    {
+                        new_data[i] = T{};
+                        for(int j = 0;j < columns;j++)
+                        {
+                            new_data[i] += data[i * columns + j];
+                        }
+                    }
+                    result = Matrix<T>(rows, new_data);
+                }
+            }
+
+            Logger::info("Successfully summed accross a dimension");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what())); // e.what() returns a const char*
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while summing accross a dimension");
+            std::cerr << "Error while summing accross a dimension" << std::endl;
+        }
         return result;
     }
 
@@ -184,6 +310,11 @@ public:
 
             Logger::info("Successfully calculated element wise operation of - using broadcasting");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while calculating element wise operation of - using broadcasting");
@@ -221,6 +352,11 @@ public:
 
             Logger::info("Successfully calculated element wise operation of * using broadcasting");
         }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
         catch(...)
         {
             Logger::error("Error while calculating element wise operation of * using broadcasting");
@@ -257,6 +393,11 @@ public:
             }
 
             Logger::info("Successfully calculated element wise operation of / using broadcasting");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
         }
         catch(...)
         {
@@ -303,16 +444,29 @@ public:
     }
 
     void print() const {
-        std::cout << "[\n";
-        for (int i = 0; i < rows; ++i) {
-            std::cout << "[";
-            for (int j = 0; j < columns; ++j) {
-                std::cout << data[i * columns + j];
-                if (j != columns - 1) std::cout << ", ";
+        if(rows > 0 && columns > 0)
+        {
+            std::cout << "[\n";
+            for (int i = 0; i < rows; ++i) {
+                std::cout << "[";
+                for (int j = 0; j < columns; ++j) {
+                    std::cout << data[i * columns + j];
+                    if (j != columns - 1) std::cout << ", ";
+                }
+                std::cout << "]\n";
             }
             std::cout << "]\n";
         }
-        std::cout << "]\n";
+        else if(rows == 0 && columns == 0)
+        {
+            std::cout << "[";
+            for(int i = 0;i < this->size;i++)
+            {
+                std::cout << data[i];
+                if(i != this->size - 1) std::cout << ", ";
+            }
+            std::cout << "]";
+        }
     }
 };
 

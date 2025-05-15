@@ -1,36 +1,44 @@
-// #include "Tensor.h"
-// #include "Matrix.h"
+#include "Tensor.h"
+#include "Matrix.h"
 // // #include "DataLoader.h"
 // // #include <set>
 // // #include <map>
 // // #include <random>
 // // #include <algorithm>
 
-// int main()
-// {
-//     auto ptr1 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
-//     Matrix<Tensor> m{2,3,ptr1}; // first matrix
-//     auto ptr2 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
-//     Matrix<Tensor> m2{3,2,ptr2}; // second matrix
-//     auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});
-//     Matrix<Tensor> m3{2,1,ptr3};
+int main()
+{
+    auto ptr1 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
+    Matrix<Tensor> m{2,3,ptr1}; // first matrix
+    auto ptr2 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
+    Matrix<Tensor> m2{3,2,ptr2}; // second matrix
+    // auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});
+    // Matrix<Tensor> m3{2,1,ptr3};
 
-//     Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
-//     // m4 shape (2,2) - m3 shape (2,1)
-//     Matrix<Tensor> m5 = m4 * m3; 
-//     // m4.print();
-//     // m3.print();
-//     m5.print();
-//     // the broadcasting rules work
-//     m5[{1,1}].backward();
-//     std::cout << m3[{1,0}].grad() << std::endl;
-//     // std::cout << m3[{1,1}] << std::endl;
-//     m4.print();
-//     // Matrix<Tensor> m3_T = m3.transpose();
-//     // m3_T.print();
-//     // m3_T[{1,1}].backward();
-//     // std::cout << m[{1,1}].grad() << std::endl; // gradients are working fine with matrices
-// }
+    Matrix<Tensor> m6 = m2.sum(1, true); // result is OneOrTwoD
+    m6.print();
+    std::cout << m6.shape() << std::endl;
+    // the sum works and the gradients works
+    m6[{2,0}].backward();
+    std::cout << m2[{2,1}].grad() << std::endl;
+
+
+    //Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
+    // m4 shape (2,2) - m3 shape (2,1)
+    //Matrix<Tensor> m5 = m4 * m3; 
+    // m4.print();
+    // m3.print();
+    //m5.print();
+    // the broadcasting rules work
+    //m5[{1,1}].backward();
+    //std::cout << m3[{1,0}].grad() << std::endl;
+    // std::cout << m3[{1,1}] << std::endl;
+    //m4.print();
+    // Matrix<Tensor> m3_T = m3.transpose();
+    // m3_T.print();
+    // m3_T[{1,1}].backward();
+    // std::cout << m[{1,1}].grad() << std::endl; // gradients are working fine with matrices
+}
 
 
 // int main()
@@ -107,31 +115,31 @@
 
 /////// TESTING FOR AUTOGRAD ENGINE ////////////////////////////////
 
-#include "Tensor.h"
-#include <iostream>
+// #include "Tensor.h"
+// #include <iostream>
 
-int main() {
-    Logger::basicConfig("Logger.txt",Logger::Loggermode::OPTIMIZED);
-    Tensor a = 1.0f;
-    Tensor b = 2.0f;
-    // Tensor c = 4.0f;
-    // Tensor e = 5.0f;
-    //std::cout << "Hello" << std::endl;
-    //std::cout << "hello" << std::endl;
-    Tensor d{5};
-    d *= 2 * b;
-    // do not assign it toitself it will overwrite the tensor
-    d = d.log();
-    d = d.pow(3);
-    Tensor e = d;
-    Tensor f = e.sigmoid();
-    f.backward();
+// int main() {
+//     Logger::basicConfig("Logger.txt",Logger::Loggermode::OPTIMIZED);
+//     Tensor a = 1.0f;
+//     Tensor b = 2.0f;
+//     // Tensor c = 4.0f;
+//     // Tensor e = 5.0f;
+//     //std::cout << "Hello" << std::endl;
+//     //std::cout << "hello" << std::endl;
+//     Tensor d{5};
+//     d *= 2 * b;
+//     // do not assign it toitself it will overwrite the tensor
+//     d = d.log();
+//     d = d.pow(3);
+//     Tensor e = d;
+//     Tensor f = e.sigmoid();
+//     f.backward();
 
-    std::cout << "e: " << e.value() << std::endl;
-    std::cout << "d: " << d.value() << std::endl;
-    std::cout << "d.grad: " << d.grad() << std::endl;
-    std::cout << "a.grad: " << a.grad() << std::endl; // should be 3.0
-    std::cout << "b.grad: " << b.grad() << std::endl; // should be 2.0
-    // std::cout << "c.grad: " << c.grad() << std::endl; // should be 5.0
-    // std::cout << "e.grad: " << e.grad() << std::endl; // should be 4.0
-}
+//     std::cout << "e: " << e.value() << std::endl;
+//     std::cout << "d: " << d.value() << std::endl;
+//     std::cout << "d.grad: " << d.grad() << std::endl;
+//     std::cout << "a.grad: " << a.grad() << std::endl; // should be 3.0
+//     std::cout << "b.grad: " << b.grad() << std::endl; // should be 2.0
+//     // std::cout << "c.grad: " << c.grad() << std::endl; // should be 5.0
+//     // std::cout << "e.grad: " << e.grad() << std::endl; // should be 4.0
+// }
