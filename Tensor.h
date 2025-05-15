@@ -812,7 +812,7 @@ public:
     >::type
     friend operator/(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -820,7 +820,7 @@ public:
     >::type
     friend operator==(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -828,7 +828,7 @@ public:
     >::type
     friend operator!=(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -836,7 +836,7 @@ public:
     >::type
     friend operator>(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -844,7 +844,7 @@ public:
     >::type
     friend operator<(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -852,7 +852,7 @@ public:
     >::type
     friend operator<=(T1&& number,T2&& tensor);
 
-    template<typename T1,typename T2>
+    template<typename T1,class T2>
     typename std::enable_if<
         std::is_arithmetic_v<std::decay_t<T1>> &&
         std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1002,7 +1002,7 @@ operator/(T1&& number,T2&& tensor)
 // tensor , here it does not give an error
 // it just does nothing
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1029,7 +1029,7 @@ operator==(T1&& number,T2&& tensor)
     return out;
 }
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1056,7 +1056,7 @@ operator!=(T1&& number,T2&& tensor)
     return out;
 }
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1084,7 +1084,7 @@ operator>(T1&& number,T2&& tensor)
     return out;
 }
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1112,7 +1112,7 @@ operator<(T1&& number,T2&& tensor)
     return out;
 }
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
@@ -1139,7 +1139,7 @@ operator<=(T1&& number,T2&& tensor)
     return out;
 }
 
-template<typename T1,typename T2>
+template<typename T1,class T2>
 typename std::enable_if<
     std::is_arithmetic_v<std::decay_t<T1>> &&
     std::is_same_v<std::decay_t<T2>,Tensor>,
