@@ -21,25 +21,28 @@ class Matrix {
     int columns;
     int size; // for vector
     std::shared_ptr<T[]> data;
+    std::vector<int> shape_;
 
     Matrix() = default;
 
 public:
 
     Matrix(int rows, int columns, T fill_value)
-        : rows(rows), columns(columns), data(std::shared_ptr<T[]>(new T[rows * columns], std::default_delete<T[]>())) {
+        : rows(rows), columns(columns),
+         data(std::shared_ptr<T[]>(new T[rows * columns], std::default_delete<T[]>())),
+         shape_({rows,columns}) {
         for (int i = 0; i < rows * columns; i++) {
             data[i] = fill_value;
         }
     }
 
-    Matrix(int rows,int columns) :  rows(rows), columns(columns), data(nullptr),size(-1) {}
+    Matrix(int rows,int columns) :  rows(rows), columns(columns), data(nullptr),shape_({rows,columns}),size(-1) {}
 
     Matrix(int rows, int columns, std::shared_ptr<T[]> data)
-        : rows(rows), columns(columns), data(data),size(-1) {}
+        : rows(rows), columns(columns), data(data),shape_({rows,columns}),size(-1) {}
 
     Matrix(int size,std::shared_ptr<T[]> data)
-        : rows(-1),columns(-1),size(size),data(data) {}
+        : rows(-1),columns(-1),size(size),shape_({-1,-1}),data(data) {}
 
     Matrix(const Matrix& matrix)
         : rows(matrix.rows), columns(matrix.columns), data(matrix.data),size(-1) {}
@@ -442,6 +445,29 @@ public:
     std::string shape() const {
         return "(" + std::to_string(rows) + ", " + std::to_string(columns) + ")";
     }
+
+    int shape(int index)
+    {
+        try
+        {
+            if(index > 2 || index < 0)
+            {
+                throw std::runtime_error("accessing the wrong index");
+            }
+            Logger::info("Succesfully will access the index");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while accessing the shape");
+            std::cerr << "Error while accessing the shape" << std::endl;
+        }
+        return this->shape_[index];
+    } 
 
     void print() const {
         if(rows > 0 && columns > 0)

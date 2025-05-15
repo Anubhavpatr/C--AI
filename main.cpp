@@ -21,6 +21,7 @@ int main()
     // the sum works and the gradients works
     m6[{2,0}].backward();
     std::cout << m2[{2,1}].grad() << std::endl;
+    std::cout << m6.shape(0) << std::endl;
 
 
     //Matrix<Tensor> m4 = m.matmul(m2); // matrix multiplication
