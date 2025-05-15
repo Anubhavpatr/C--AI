@@ -12,6 +12,16 @@ int main()
     Matrix<Tensor> m{2,3,ptr1}; // first matrix
     auto ptr2 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
     Matrix<Tensor> m2{3,2,ptr2}; // second matrix
+
+
+    Matrix<Tensor> m10 = Matrix<Tensor>::ones_like(m2);
+    m10.print();
+
+    Matrix<Tensor> m11 = Matrix<Tensor>::zeros_like(m2);
+    m11.print();
+
+
+
     // auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});
     // Matrix<Tensor> m3{2,1,ptr3};
 

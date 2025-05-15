@@ -145,6 +145,32 @@ public:
         return result;
     }
 
+    template<typename _T>
+    typename std::enable_if<
+        std::is_same_v<std::decay_t<_T>,Matrix<T>>,
+        Matrix<T>
+    >::type
+    static ones_like(_T&& a)
+    {
+        // goes out of scope so therefore did not use try and catch
+        Matrix<T> result{a.rows,a.columns,1.0};
+        return result;
+    }
+
+    template<typename _T>
+    typename std::enable_if<
+        std::is_same_v<std::decay_t<_T>,Matrix<T>>,
+        Matrix<T>
+    >::type
+    static zeros_like(_T&& a)
+    {
+        // goes out of scope so therefore did not use try and catch
+        Matrix<T> result{a.rows,a.columns,0.0};
+        return result;
+    }
+
+
+
     Matrix<T> max(int dim=0,bool keepdim=false)
     {
         Matrix<T> result{};
