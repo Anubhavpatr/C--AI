@@ -30,7 +30,7 @@ class Logger
 
         static void info(std::string line)
         {
-            if(current_mode != Loggermode::OPTIMIZED)
+            if(current_mode != Loggermode::OPTIMIZED || file_path == "")
             {
                 std::ofstream ofs(file_path,std::ios::app); // append mode
                 if(ofs.is_open())

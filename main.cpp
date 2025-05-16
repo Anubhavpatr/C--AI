@@ -8,11 +8,24 @@
 
 int main()
 {
-    auto ptr1 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
-    Matrix<Tensor> m{2,3,ptr1}; // first matrix
+    Logger::basicConfig("Logger.txt",Logger::Loggermode::ERROR);
+    // auto ptr1 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
+    // Matrix<Tensor> m{2,3,ptr1}; // first matrix
     auto ptr2 = std::shared_ptr<Tensor[]>(new Tensor[6]{1,2,3,4,5,6});
     Matrix<Tensor> m2{3,2,ptr2}; // second matrix
+    // it causes a problem of ambiguous initializer list so we need 
+    // to mention the type of data structure we are passing
+    Matrix<Tensor> m15 = m2[std::make_tuple(std::vector<int>{0,1},std::vector<int>{0,1})];
+    m15.print();
 
+    // The mean of the vector works
+    // std::cout << m15.mean() << std::endl;
+    Tensor t_1 = m15.mean();
+    t_1.backward();
+    std::cout << t_1.value() << std::endl;
+    std::cout << t_1.grad() << std::endl;
+    std::cout << m15[1].value() << std::endl;
+    std::cout << m15[1].grad() << std::endl;
 
     // Matrix<Tensor> m10 = Matrix<Tensor>::ones_like(m2);
     // m10.print();

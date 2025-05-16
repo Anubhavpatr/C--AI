@@ -202,7 +202,7 @@ public:
 
     template<typename T>
     typename std::enable_if<
-        std::is_same_v<std::decay_t<T>,Tensor>,
+        std::is_same_v<std::decay_t<T>,Tensor> || std::is_arithmetic_v<std::decay_t<T>>,
         Tensor
     >::type
     operator/(T&& other)
@@ -214,9 +214,9 @@ public:
             {
                 out.impl->val = this->value() / other.value();
                 out.impl->prev = {this->impl,other.impl};
-                out.impl->backward_fn = [object = *this,&out,other_impl = other.impl](){
-                    object.impl->grad += out.grad() / other_impl->val;
-                    other_impl->grad += -1  * out.grad() / std::pow(other_impl->val,2);
+                out.impl->backward_fn = [object = *this,out_impl = out.impl,other_impl = other.impl](){
+                    object.impl->grad += out_impl->grad / other_impl->val;
+                    other_impl->grad += -1  * out_impl->grad / std::pow(other_impl->val,2);
                 };
 
                 Logger::info("Successfully divided a tensor by a tensor");
@@ -225,9 +225,10 @@ public:
             {
                 out.impl->val = this->value() / other;
                 out.impl->prev = {this->impl};
-                out.impl->backward_fn = [object = *this,&out,number = other]()
+                // do not use &out the tensor get's updated by others and the wrong gradient is passed
+                out.impl->backward_fn = [object = *this,out_impl = out.impl,number = other]()
                 {
-                    object.impl->grad += out.impl->grad / number;
+                    object.impl->grad += out_impl->grad / number;
                 };
             Logger::info("Successfully divided a tensor by a number");
             }
@@ -369,7 +370,7 @@ public:
 
     template<typename T>
     typename std::enable_if<
-        std::is_same_v<std::decay_t<T>,Tensor>,
+        std::is_same_v<std::decay_t<T>,Tensor> || std::is_arithmetic_v<std::decay_t<T>>,
         Tensor
     >::type
     operator/=(T&& other)
@@ -634,8 +635,8 @@ public:
         {
             out.impl->val = -1.0 * this->value();
             out.impl->prev = {this->impl};
-            out.impl->backward_fn = [object = *this,&out](){
-                object.impl->grad -= 1.0 * out.grad();
+            out.impl->backward_fn = [object = *this,out_impl = out.impl](){
+                object.impl->grad -= 1.0 * out_impl->grad;
             };
 
             Logger::info("Successfully negated the tensor");

@@ -43,6 +43,24 @@ public:
     Matrix(int rows, int columns, std::shared_ptr<T[]> data)
         : rows(rows), columns(columns), data(data),shape_({rows,columns}),size(-1) {}
 
+    Matrix(int rows,int columns,std::vector<T> new_data) : rows(rows),columns(columns),size(-1),
+    data(std::shared_ptr<T[]>(new T[rows * columns], std::default_delete<T[]>()))
+    {
+        for(int i = 0;i < rows * columns;i++)
+        {
+            data[i] = new_data[i];
+        }
+    }
+
+    Matrix(int size,std::vector<T> new_data) : rows(-1),columns(-1),size(size),
+    data(std::shared_ptr<T[]>(new T[size], std::default_delete<T[]>()))
+    {
+        for(int i = 0;i < size;i++)
+        {
+            data[i] = new_data[i];
+        }
+    }
+
     Matrix(int size,std::shared_ptr<T[]> data)
         : rows(-1),columns(-1),size(size),shape_({-1,-1}),data(data) {}
 
@@ -51,11 +69,70 @@ public:
 
     // could have used template<typename ...Args>
     // but if i pass a single argument could cause ambiguity
+    std::vector<T> to_vector()
+    {
+        std::vector<T> result{};
+        try
+        {
+            if(rows != -1 || columns != -1 || size == -1)
+            {
+                throw std::runtime_error("Error while converting since since only vector matrix can be converted to vector");
+            }
+            for(int i = 0;i < size;i++)
+            {
+                result.push_back(this->data[i]);
+            }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while converting to vector");
+            std::cerr << "Error while converting to vector" << std::endl;
+        }
+        return result;
+    }
+
+    T operator[](int position)
+    {
+        T result{};
+        //std::cout << "This is used " << this->size << std::endl;
+        try
+        {
+            if(rows != -1 || columns != -1 && this->size == -1)
+            {
+                throw std::runtime_error("Only vectors can use this method");
+            }
+            if(position >= this->size)
+            {
+                throw std::runtime_error("Accessing the wrong element in a vector");
+            }
+            result = this->data[position];
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while accessing a vector");
+            std::cerr << "Error while accessing a vector" << std::endl;
+        }
+        return result;
+    }
 
     T& operator[](std::tuple<int,int> position){
         int index = std::get<0>(position) * columns + std::get<1>(position);
         try
         {
+            if(rows == -1 || columns == -1 || this->size != -1)
+            {
+                throw std::runtime_error("This is can only be used by a Matrix");
+            }
             if(index >= rows * columns)
             {
                 throw std::runtime_error("Wrong index not accessible");
@@ -75,6 +152,36 @@ public:
         return data[index];
     }
 
+    Matrix<T> operator[](std::tuple<std::vector<int>,std::vector<int>> input)
+    {
+        Matrix<T> result{};
+        try
+        {
+            if(rows == -1 || columns == -1 || this->size != -1)
+            {
+                throw std::runtime_error("This is can only be used by a Matrix");
+            }
+            std::vector<T> output{};
+            for(int i = 0;i < std::get<0>(input).size();i++)
+            {
+                output.push_back((*this)[{std::get<0>(input)[i],std::get<1>(input)[i]}]);
+            }
+            result = Matrix<T>(std::get<1>(input).size(),output);
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while accessing elements in a matrix");
+            std::cerr << "Error while accessing elements in a matrix" << std::endl;
+        }
+
+        return result;
+    }
+
     std::vector<T> operator[](std::tuple<int> position) {
         std::vector<T> row;
         int offset = std::get<0>(position) * columns;
@@ -87,13 +194,32 @@ public:
 
     ThreeDArray<T> operator[](const std::vector<std::vector<int>>& indices) {
         std::vector<std::shared_ptr<T>> data_new;
-        for (const auto& row : indices) {
-            for (int idx : row) {
-                // facing an ambiguity since both operators can take an initializer list
-                // so i need to mention explicitely which method to call
-                auto temp = (*this)[std::tuple<int>{idx}];
-                data_new.insert(data_new.end(), temp.begin(), temp.end());
+        try
+        {
+            if(rows == -1 || columns == -1 || this->size != -1)
+            {
+                throw std::runtime_error("This is can only be used by a Matrix");
             }
+
+            for (const auto& row : indices) {
+                for (int idx : row) {
+                    // facing an ambiguity since both operators can take an initializer list
+                    // so i need to mention explicitely which method to call
+                    auto temp = (*this)[std::tuple<int>{idx}];
+                    data_new.insert(data_new.end(), temp.begin(), temp.end());
+                }
+            }
+            Logger::info("Succesfully accessed in a Matrix to produce 3D Array");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while accessing elements in a Matrix to produce a 3D Matrix");
+            std::cerr << "Error while accessing elements in a Matrix to produce a 3D Matrix" << std::endl;
         }
         return {static_cast<int>(indices.size()), static_cast<int>(indices[0].size()), columns, data_new};
     }
@@ -538,6 +664,38 @@ public:
             std::cerr << "Error while matrix multiplying two matrices" << std::endl;
         }
         return {rows, a.columns, new_data};
+    }
+
+    // mean of the vector
+    T mean()
+    {
+        T t{};
+        //std::cout << "This is used" << this->size << std::endl;
+        try
+        {
+            if(rows != -1 || columns != -1 || size == -1 )
+            {
+                throw std::runtime_error("Matrices are not allowed to use this function");
+            }
+            for(int i = 0;i < this->size;i++)
+            {
+                t += this->data[i];
+            }
+            t /= this->size;
+            Logger::info("Successfully calculated the mean of a vector");
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while calculating the mean of a vector");
+            std::cerr << "Error while calculating the mean of a vector" << std::endl;
+        }
+
+        return t;
     }
 
     //  Broadcasting needs to be implemented

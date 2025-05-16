@@ -1,0 +1,9 @@
+Succesfully accessed the element
+Succesfully accessed the element
+Successfully added the tensor with another tensor
+Successfully added a tensor with itself
+Successfully added the tensor with another tensor
+Successfully added a tensor with itself
+Successfully divided a tensor by a number
+Successfully with multiplying with a tensor with itself
+Successfully calculated the mean of a vector
