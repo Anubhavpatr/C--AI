@@ -14,11 +14,20 @@ int main()
     Matrix<Tensor> m2{3,2,ptr2}; // second matrix
 
 
-    Matrix<Tensor> m10 = Matrix<Tensor>::ones_like(m2);
-    m10.print();
+    // Matrix<Tensor> m10 = Matrix<Tensor>::ones_like(m2);
+    // m10.print();
 
-    Matrix<Tensor> m11 = Matrix<Tensor>::zeros_like(m2);
-    m11.print();
+    // Matrix<Tensor> m11 = Matrix<Tensor>::zeros_like(m2);
+    // m11.print();
+
+    Matrix<Tensor> m12 = m2.sum(0,false);
+    Tensor t = m12.sum();
+    m2.print();
+    m12.print();
+    t.backward();
+    std::cout << t << std::endl;
+    std::cout << m2[{1,0}].grad() << std::endl;
+    std::cout << m2[{2,1}].grad() << std::endl;
 
 
 

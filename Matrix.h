@@ -101,15 +101,25 @@ public:
     Matrix<T> broadcast_to(int target_rows, int target_cols) {
         try
         {
-            if ((rows != target_rows && rows != 1) ||
-            (columns != target_cols && columns != 1)) {
-                throw std::runtime_error("Incompatible shapes for broadcasting");
+            if(rows != -1 && columns != -1)
+            {
+                if ((rows != target_rows && rows != 1) ||
+                    (columns != target_cols && columns != 1)) {
+                    throw std::runtime_error("Incompatible shapes for broadcasting");
+                }
             }
         }
         catch(const std::exception& e)
         {
             Logger::error(std::string(e.what()));
             std::cerr << e.what() << std::endl;
+        }
+        // convert the vector to a matrix in case of broadcasting it
+        if(rows == -1 && columns == -1)
+        {
+            this->rows = 1;
+            this->columns = this->size;
+            this->size = -1;
         }
 
         Matrix<T> result{target_rows, target_cols};
@@ -168,8 +178,6 @@ public:
         Matrix<T> result{a.rows,a.columns,0.0};
         return result;
     }
-
-
 
     Matrix<T> max(int dim=0,bool keepdim=false)
     {
@@ -365,8 +373,43 @@ public:
         return result;
     }
 
+    T sum()
+    {
+        T sum = T{};
+        try
+        {
+            if(rows != -1 && columns != -1)
+            {
+                throw std::runtime_error("Only Vectors are allowed not 2D Matrix");
+            }
+            
+            if(this->size == -1)
+            {
+                throw std::runtime_error("Only Vectors are allowed");
+            }
 
-    Matrix<T> sum(int dim=0,bool keepdim=false)
+            for(int i = 0;i < this->size;i++)
+            {
+                sum += this->data[i];
+            }
+
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while doing sum of a vector");
+            std::cerr << "Error while doing sum of a vector" << std::endl;
+        }
+
+        return sum;
+    }
+
+
+    Matrix<T> sum(int dim,bool keepdim)
     {
         Matrix<T> result{};
         try
@@ -388,6 +431,7 @@ public:
                 }
                 else
                 {
+                    //std::cout << "I am here" << std::endl;
                     std::shared_ptr<T[]> new_data(new T[1 * columns]);
                     for(int i = 0;i < columns;i++)
                     {
@@ -443,6 +487,7 @@ public:
             Logger::error("Error while summing accross a dimension");
             std::cerr << "Error while summing accross a dimension" << std::endl;
         }
+       //std::cout << "I am here" << std::endl;
         return result;
     }
 
@@ -718,7 +763,7 @@ public:
             }
             std::cout << "]\n";
         }
-        else if(rows == 0 && columns == 0)
+        else if(rows == -1 && columns == -1)
         {
             std::cout << "[";
             for(int i = 0;i < this->size;i++)
@@ -726,7 +771,7 @@ public:
                 std::cout << data[i];
                 if(i != this->size - 1) std::cout << ", ";
             }
-            std::cout << "]";
+            std::cout << "]" << std::endl;
         }
     }
 };
