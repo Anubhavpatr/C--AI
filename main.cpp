@@ -20,15 +20,17 @@ int main()
     // Matrix<Tensor> m11 = Matrix<Tensor>::zeros_like(m2);
     // m11.print();
 
-    Matrix<Tensor> m12 = m2.sum(0,false);
-    Tensor t = m12.sum();
-    m2.print();
-    m12.print();
-    t.backward();
-    std::cout << t << std::endl;
-    std::cout << m2[{1,0}].grad() << std::endl;
-    std::cout << m2[{2,1}].grad() << std::endl;
+    // Matrix<Tensor> m12 = m2.sum(0,false);
+    // Tensor t = m12.sum();
+    // m2.print();
+    // m12.print();
+    // t.backward();
+    // std::cout << t << std::endl;
+    // std::cout << m2[{1,0}].grad() << std::endl;
+    // std::cout << m2[{2,1}].grad() << std::endl;
 
+    // Matrix<Tensor> m_clone = m2.clone();
+    // m_clone.print();
 
 
     // auto ptr3 =  std::shared_ptr<Tensor[]>(new Tensor[2]{1,2});

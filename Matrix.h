@@ -409,6 +409,31 @@ public:
     }
 
 
+    Matrix<T> clone()
+    {
+        Matrix<T> result{this->rows,this->columns};
+        try
+        {
+            result.data = std::shared_ptr<T[]>(new T[rows * columns]);
+            for(int i = 0;i < rows * columns ;i++)
+            {
+                result.data[i] = T{this->data[i].value()};
+            }
+        }
+        catch(const std::exception& e)
+        {
+            Logger::error(std::string(e.what()));
+            std::cerr << e.what() << std::endl;
+        }
+        catch(...)
+        {
+            Logger::error("Error while cloning the matrix");
+            std::cerr << "Error while clonning the matrix" << std::endl;
+        }
+        return result;
+    }
+
+
     Matrix<T> sum(int dim,bool keepdim)
     {
         Matrix<T> result{};
